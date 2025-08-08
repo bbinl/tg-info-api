@@ -139,7 +139,7 @@
     Powered by <a href="https://t.me/bbinl_cc_bot">bbinl cc bot</a> &middot;
     <a href="https://github.com/bbinl/fuck.git" target="_blank" rel="noopener noreferrer">Source Code</a>
   </footer>
-  <script>
+<script>
   async function fetchUserInfo() {
     const username = document.getElementById('usernameInput').value.trim();
     const resultBox = document.getElementById('usernameResult');
@@ -153,16 +153,26 @@
     resultBox.innerHTML = 'Loading...';
 
     try {
-      // এখানে API-এর পাথ পরিবর্তন করা হয়েছে
-      const response = await fetch(`/api/check?username=${encodeURIComponent(username)}`); // <--- এখানে 'cc' এর পরিবর্তে 'username' ব্যবহার করা হয়েছে
+      // API-এর পাথ এবং প্যারামিটার সঠিক করা হয়েছে
+      const response = await fetch(`/api/check?username=${encodeURIComponent(username)}`);
+      
+      // যদি রেসপন্স ok না হয়, তবে এরর হ্যান্ডেল করা হচ্ছে।
+      if (!response.ok) {
+          const errorData = await response.json();
+          resultBox.innerHTML = `<p class="error">${errorData.error || 'Unknown error occurred.'}</p>`;
+          return;
+      }
+
       const data = await response.json();
 
-      if (response.ok) {
-        resultBox.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      // এখানে প্রাপ্ত JSON ডেটা সুন্দরভাবে ফরম্যাট করে দেখানো হচ্ছে।
+      if (data && data['Channel Information ↯']) { // নিশ্চিত করা হচ্ছে যে ডেটা সঠিক ফরম্যাটে আছে
+        const formattedData = JSON.stringify(data['Channel Information ↯'], null, 2);
+        resultBox.innerHTML = `<pre>${formattedData}</pre>`;
       } else {
-        const errorMsg = data.error || data.message || 'An unknown error occurred.';
-        resultBox.innerHTML = `<p class="error">${errorMsg}</p><p class="error">No information found. Please ensure the username is correct or try starting the bot on Telegram: <a href="https://t.me/mc_tg_cd_bot" target="_blank">@mc_tg_cd_bot</a></p>`;
+        resultBox.innerHTML = `<p class="error">No information found for this username.</p>`;
       }
+
     } catch (err) {
       resultBox.innerHTML = `<p class="error">Network error: ${err.message}</p>`;
     }
