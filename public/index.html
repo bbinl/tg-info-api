@@ -153,8 +153,9 @@
       resultBox.innerHTML = 'Loading...';
 
       try {
-        const response = await fetch(`/api/get-user?username=${encodeURIComponent(username)}`); // <--- এখানে API রুটের পাথ পরিবর্তন করা হয়েছে।
-        const data = await response.json(); // <--- এখানে response.json() ব্যবহার করা হয়েছে কারণ API JSON ডেটা পাঠাবে।
+        // এখানে API-এর পাথ পরিবর্তন করা হয়েছে
+        const response = await fetch(`/api/check?cc=${encodeURIComponent(username)}`); 
+        const data = await response.json();
 
         if (response.ok) {
           resultBox.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
