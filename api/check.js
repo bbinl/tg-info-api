@@ -1,4 +1,4 @@
-// api/check.js
+// pages/api/check.js
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({
@@ -6,30 +6,40 @@ export default async function handler(req, res) {
     });
   }
 
-  // URL থেকে 'cc' প্যারামিটার নেওয়া হচ্ছে, কারণ ইনডেক্স পেজ এটি পাঠাচ্ছে।
-  const cc = req.query.cc; // <--- এখানে পরিবর্তন করা হয়েছে
+  const username = req.query.username;
 
-  if (!cc) {
+  if (!username) {
     return res.status(400).json({
       message: '🧪 Welcome to the User Info API endpoint',
-      error: 'CC parameter is missing.', // <--- বার্তাও পরিবর্তন করা হয়েছে
-      usage: 'To get user info, please provide a username in the "cc" parameter.',
-      example: '`/api/check?cc=@0no_coder_xone`' // <--- উদাহরণের পাথ পরিবর্তন করা হয়েছে
+      error: 'Username parameter is missing.',
+      usage: 'To get user info, please provide a username.',
+      example: '`/api/check?username=no_coder_xone`'
     });
   }
 
-  // মেইন এপিআই URL তৈরি করা হচ্ছে।
-  // এখানে 'cc' প্যারামিটারের মান ব্যবহার করা হয়েছে।
-  const mainApiUrl = `https://web-production-f1985.up.railway.app/get_user_info?username=${cc}`;
+  // যদি ইউজার @ দিয়ে শুরু করে, তবে তা সরিয়ে দেওয়া হচ্ছে।
+  const cleanUsername = username.startsWith('@') ? username.substring(1) : username;
+
+  // মূল এপিআই URL তৈরি করা হচ্ছে।
+  const mainApiUrl = `https://web-production-f1985.up.railway.app/get_user_info?username=@${cleanUsername}`;
 
   try {
     const response = await fetch(mainApiUrl);
+    
+    // যদি রেসপন্স ok না হয়, তাহলে সার্ভারের ত্রুটি ফেরত দেওয়া হবে।
+    if (!response.ok) {
+        return res.status(response.status).json({
+            error: `Failed to fetch data from main API. Status: ${response.status}`
+        });
+    }
+
     const data = await response.json();
 
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'application/json');
 
-    res.status(response.status).json(data);
+    // প্রাপ্ত ডেটা ক্লায়েন্টের কাছে পাঠানো হচ্ছে।
+    res.status(200).json(data);
 
   } catch (error) {
     res.status(500).json({
