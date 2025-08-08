@@ -140,33 +140,33 @@
     <a href="https://github.com/bbinl/fuck.git" target="_blank" rel="noopener noreferrer">Source Code</a>
   </footer>
   <script>
-    async function fetchUserInfo() {
-      const username = document.getElementById('usernameInput').value.trim();
-      const resultBox = document.getElementById('usernameResult');
-      resultBox.innerHTML = "";
+  async function fetchUserInfo() {
+    const username = document.getElementById('usernameInput').value.trim();
+    const resultBox = document.getElementById('usernameResult');
+    resultBox.innerHTML = "";
 
-      if (!username) {
-        resultBox.innerHTML = '<p class="error">Please enter a username.</p>';
-        return;
-      }
-
-      resultBox.innerHTML = 'Loading...';
-
-      try {
-        // এখানে API-এর পাথ পরিবর্তন করা হয়েছে
-        const response = await fetch(`/api/check?cc=${encodeURIComponent(username)}`); 
-        const data = await response.json();
-
-        if (response.ok) {
-          resultBox.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
-        } else {
-          const errorMsg = data.error || data.message || 'An unknown error occurred.';
-          resultBox.innerHTML = `<p class="error">${errorMsg}</p><p class="error">No information found. Please ensure the username is correct or try starting the bot on Telegram: <a href="https://t.me/mc_tg_cd_bot" target="_blank">@mc_tg_cd_bot</a></p>`;
-        }
-      } catch (err) {
-        resultBox.innerHTML = `<p class="error">Network error: ${err.message}</p>`;
-      }
+    if (!username) {
+      resultBox.innerHTML = '<p class="error">Please enter a username.</p>';
+      return;
     }
-  </script>
+
+    resultBox.innerHTML = 'Loading...';
+
+    try {
+      // এখানে API-এর পাথ পরিবর্তন করা হয়েছে
+      const response = await fetch(`/api/check?username=${encodeURIComponent(username)}`); // <--- এখানে 'cc' এর পরিবর্তে 'username' ব্যবহার করা হয়েছে
+      const data = await response.json();
+
+      if (response.ok) {
+        resultBox.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } else {
+        const errorMsg = data.error || data.message || 'An unknown error occurred.';
+        resultBox.innerHTML = `<p class="error">${errorMsg}</p><p class="error">No information found. Please ensure the username is correct or try starting the bot on Telegram: <a href="https://t.me/mc_tg_cd_bot" target="_blank">@mc_tg_cd_bot</a></p>`;
+      }
+    } catch (err) {
+      resultBox.innerHTML = `<p class="error">Network error: ${err.message}</p>`;
+    }
+  }
+</script>
 </body>
 </html>
